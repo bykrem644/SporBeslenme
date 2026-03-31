@@ -1,0 +1,25 @@
+﻿@model IEnumerable<SporBeslenmeWeb.Models.KasGruplari>
+
+<div class="container mt-4">
+    <h2>Kas Grupları Listesi</h2>
+
+    <a href="/KasGruplari/Ekle" class="btn btn-primary mb-3">Yeni Kas Grubu Ekle</a>
+
+    <ul class="list-group">
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>@item.Ad</strong> - @item.Aciklama
+                    </div>
+                    <div>
+                        <a href="/KasGruplari/Duzenle/@item.KasGrupID" class="btn btn-sm btn-warning me-2">Düzenle</a>
+                        <a href="/KasGruplari/Sil/@item.KasGrupID" class="btn btn-sm btn-danger" onclick="return confirm('Bu kas grubunu silmek istediğinize emin misiniz?');">Sil</a>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>

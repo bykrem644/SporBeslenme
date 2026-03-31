@@ -1,0 +1,61 @@
+﻿@model SporBeslenmeWeb.Models.Tarifler
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg mt-4">
+                <div class="card-header bg-dark text-white text-center py-4">
+                    <h4 class="mb-0 fw-bold">Yeni Tarif Ekle</h4>
+                </div>
+                <div class="card-body p-5 bg-light">
+
+                    <form method="post" action="/Tarifler/Ekle">
+                        <div asp-validation-summary="All" class="text-danger fw-bold mb-3"></div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Tarif Adı</label>
+                            <input type="text" name="Ad" class="form-control form-control-lg shadow-sm" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Kategori</label>
+                            <input type="text" name="Kategori" class="form-control form-control-lg shadow-sm" placeholder="Örn: Kahvaltı, Antrenman Sonrası" />
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Karbonhidrat Yüzdesi</label>
+                                <input type="number" name="KarbonhidratYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 60" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Protein Yüzdesi</label>
+                                <input type="number" name="ProteinYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 30" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold text-secondary">Yağ Yüzdesi</label>
+                                <input type="number" name="YagYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 10" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Malzemeler</label>
+                            <textarea name="Malzemeler" class="form-control shadow-sm" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-secondary">Hazırlanış</label>
+                            <textarea name="Hazirlanis" class="form-control shadow-sm" rows="4"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">Kaydet</button>
+                            <a href="/Tarifler/Index" class="btn btn-outline-dark btn-lg fw-bold">Listeye Geri Dön</a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

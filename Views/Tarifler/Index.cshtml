@@ -1,0 +1,46 @@
+﻿@model IEnumerable<SporBeslenmeWeb.Models.Tarifler>
+
+<div class="container mt-4">
+    <h2>Diyet ve Tarifler Listesi</h2>
+    <a href="/Tarifler/Ekle" class="btn btn-primary mb-4">Yeni Tarif Ekle</a>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">@item.Ad</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-3 text-muted">Kategori: @item.Kategori</h6>
+
+                            <div class="mb-3">
+                                <span class="badge bg-primary me-1">Karbonhidrat: %@item.KarbonhidratYuzdesi</span>
+                                <span class="badge bg-danger me-1">Protein: %@item.ProteinYuzdesi</span>
+                                <span class="badge bg-warning text-dark">Yağ: %@item.YagYuzdesi</span>
+                            </div>
+
+                            <h6 class="fw-bold">Malzemeler:</h6>
+                            <p class="card-text small">@item.Malzemeler</p>
+
+                            <h6 class="fw-bold">Hazırlanış:</h6>
+                            <p class="card-text small">@item.Hazirlanis</p>
+                            <hr />
+                            <div class="d-flex justify-content-between">
+                                <a href="/Tarifler/Duzenle/@item.TarifID" class="btn btn-sm btn-warning">Düzenle</a>
+                                <a href="/Tarifler/Sil/@item.TarifID" class="btn btn-sm btn-danger" onclick="return confirm('Bu tarifi silmek istediğinize emin misiniz?');">Sil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">Henüz sisteme eklenmiş bir tarif bulunmuyor.</div>
+        }
+    </div>
+</div>

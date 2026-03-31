@@ -1,0 +1,48 @@
+﻿@model SporBeslenmeWeb.Models.Tarifler
+
+<div class="container mt-4">
+    <h2>Tarifi Düzenle</h2>
+
+    <form method="post" action="/Tarifler/Duzenle">
+        <!-- Hangi veriyi güncellediğimizi bilmesi için gizli ID -->
+        <input type="hidden" name="TarifID" value="@Model.TarifID" />
+
+        <div class="mb-3">
+            <label class="form-label">Tarif Adı</label>
+            <input type="text" name="Ad" class="form-control" value="@Model.Ad" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Kategori</label>
+            <input type="text" name="Kategori" class="form-control" value="@Model.Kategori" />
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label class="form-label">Karbonhidrat (%)</label>
+                <input type="number" name="KarbonhidratYuzdesi" class="form-control" value="@Model.KarbonhidratYuzdesi" />
+            </div>
+            <div class="col">
+                <label class="form-label">Protein (%)</label>
+                <input type="number" name="ProteinYuzdesi" class="form-control" value="@Model.ProteinYuzdesi" />
+            </div>
+            <div class="col">
+                <label class="form-label">Yağ (%)</label>
+                <input type="number" name="YagYuzdesi" class="form-control" value="@Model.YagYuzdesi" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Malzemeler</label>
+            <textarea name="Malzemeler" class="form-control" rows="3">@Model.Malzemeler</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hazırlanış</label>
+            <textarea name="Hazirlanis" class="form-control" rows="4">@Model.Hazirlanis</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Değişiklikleri Kaydet</button>
+        <a href="/Tarifler/Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

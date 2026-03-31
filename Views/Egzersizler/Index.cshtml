@@ -1,0 +1,43 @@
+﻿@model IEnumerable<SporBeslenmeWeb.Models.Egzersizler>
+
+<div class="container mt-4">
+    <h2>Egzersiz Listesi</h2>
+
+    <a href="/Egzersizler/Ekle" class="btn btn-primary mb-3">Yeni Egzersiz Ekle</a>
+
+    <div class="row">
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(item.VideoYolu))
+                        {
+                            <video class="card-img-top" controls preload="metadata" style="max-height: 250px; background-color: #000;">
+                                <source src="@item.VideoYolu" type="video/mp4">
+                                Tarayıcınız video etiketini desteklemiyor.
+                            </video>
+                        }
+                        else
+                        {
+                            <div class="bg-light text-center py-5">
+                                <span class="text-muted">Video Yüklenmedi</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">@item.Ad</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Zorluk Seviyesi: @item.ZorlukSeviyesi</h6>
+                            <p class="card-text">@item.NasilYapilir</p>
+                            <hr />
+                            <div class="d-flex justify-content-between mt-3">
+                                <a href="/Egzersizler/Duzenle/@item.EgzersizID" class="btn btn-sm btn-warning">Düzenle</a>
+                                <a href="/Egzersizler/Sil/@item.EgzersizID" class="btn btn-sm btn-danger" onclick="return confirm('Bu egzersizi silmek istediğinize emin misiniz?');">Sil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

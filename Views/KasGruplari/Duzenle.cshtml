@@ -1,0 +1,22 @@
+﻿@model SporBeslenmeWeb.Models.KasGruplari
+
+<div class="container mt-4">
+    <h2>Kas Grubunu Düzenle</h2>
+
+    <form method="post" action="/KasGruplari/Duzenle">
+        <input type="hidden" name="KasGrupID" value="@Model.KasGrupID" />
+
+        <div class="mb-3">
+            <label class="form-label">Kas Grubu Adı</label>
+            <input type="text" name="Ad" class="form-control" value="@Model.Ad" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Açıklama</label>
+            <textarea name="Aciklama" class="form-control" rows="3">@Model.Aciklama</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Değişiklikleri Kaydet</button>
+        <a href="/KasGruplari/Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

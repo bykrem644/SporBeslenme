@@ -1,0 +1,44 @@
+﻿@model SporBeslenmeWeb.Models.Egzersizler
+
+<div class="container mt-4">
+    <h2>Egzersizi Düzenle</h2>
+
+    <!-- Video yükleme ihtimaline karşı enctype ekliyoruz -->
+    <form method="post" action="/Egzersizler/Duzenle" enctype="multipart/form-data">
+
+        <!-- Arka planda kaybolmaması için ID ve eski Video Yolunu gizli olarak tutuyoruz -->
+        <input type="hidden" name="EgzersizID" value="@Model.EgzersizID" />
+        <input type="hidden" name="VideoYolu" value="@Model.VideoYolu" />
+
+        <div class="mb-3">
+            <label class="form-label">Egzersiz Adı</label>
+            <input type="text" name="Ad" class="form-control" value="@Model.Ad" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hangi Kas Grubu</label>
+            <select name="KasGrupID" class="form-select" asp-items="ViewBag.KasGruplari" required>
+                <option value="">Lütfen bir kas grubu seçin</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Zorluk Seviyesi</label>
+            <input type="text" name="ZorlukSeviyesi" class="form-control" value="@Model.ZorlukSeviyesi" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nasıl Yapılır</label>
+            <textarea name="NasilYapilir" class="form-control" rows="4">@Model.NasilYapilir</textarea>
+        </div>
+
+        <div class="mb-3 border p-3 bg-light rounded">
+            <label class="form-label fw-bold">Videoyu Değiştir (Opsiyonel)</label>
+            <p class="small text-muted mb-2">Eğer mevcut videonun kalmasını istiyorsanız burayı boş bırakın. Sadece yeni bir video seçerseniz eskisiyle değişecektir.</p>
+            <input type="file" name="YeniVideoDosyasi" class="form-control" accept="video/mp4" />
+        </div>
+
+        <button type="submit" class="btn btn-warning">Değişiklikleri Kaydet</button>
+        <a href="/Egzersizler/Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>

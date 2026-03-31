@@ -1,0 +1,35 @@
+﻿@model SporBeslenmeWeb.Models.KasGruplari
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg mt-4">
+                <div class="card-header bg-dark text-white text-center py-4">
+                    <h4 class="mb-0 fw-bold">Yeni Kas Grubu Ekle</h4>
+                </div>
+                <div class="card-body p-5 bg-light">
+
+                    <form method="post" action="/KasGruplari/Ekle">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Kas Grubu Adı</label>
+                            <input type="text" name="Ad" class="form-control form-control-lg shadow-sm" required />
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-secondary">Açıklama</label>
+                            <textarea name="Aciklama" class="form-control shadow-sm" rows="4"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">Kaydet</button>
+                            <a href="/KasGruplari/Index" class="btn btn-outline-dark btn-lg fw-bold">Listeye Geri Dön</a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
