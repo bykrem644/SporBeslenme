@@ -1,0 +1,64 @@
+﻿@using SporBeslenmeWeb.Models
+@model Makale
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="background: #1e2229; border: 1px solid #0dcaf0; box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);">
+                <div class="card-header border-info text-center py-3">
+                    <h4 class="text-info fw-bold mb-0">Yeni Makale Yayınla</h4>
+                </div>
+                <div class="card-body text-light p-4">
+                    <form asp-action="Ekle" method="post" enctype="multipart/form-data">
+
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">Makale Başlığı</label>
+                            <input type="text" asp-for="Baslik" class="form-control bg-dark text-light border-secondary" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Yazar (Eğitmen Adı)</label>
+                                <input type="text" asp-for="Yazar" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Kapak Fotoğrafı Seç</label>
+                                <input type="file" name="KapakGorseli" class="form-control bg-dark text-light border-secondary" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded" style="border: 1px dashed #0dcaf0; background: rgba(13, 202, 240, 0.05);">
+                            <label class="form-label text-info fw-bold">Eğitim PDF'i Ekle (Opsiyonel)</label>
+                            <input type="file" name="PdfDosyasi" class="form-control bg-dark text-light border-info" accept="application/pdf">
+                            <small class="text-secondary mt-1 d-block">Eğer makaleyle birlikte hazır bir PDF dökümanı sunacaksanız buradan seçebilirsiniz.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">Kısa Özet (Ana Sayfada Görünecek)</label>
+                            <textarea asp-for="Ozet" class="form-control bg-dark text-light border-secondary" rows="2" required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-info fw-bold">Makale İçeriği (Detaylı Yazı)</label>
+                            <textarea id="IcerikEditoru" asp-for="Icerik" class="form-control bg-dark text-light border-secondary" rows="10"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-info w-100 fw-bold text-dark py-2 fs-5">Makaleyi Yayınla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        // Editörü başlat ve kırmızı uyarıyı sonsuza dek kapat!
+        CKEDITOR.replace('IcerikEditoru', {
+            uiColor: '#1e2229',
+            language: 'tr',
+            versionCheck: false // İŞTE SİHİRLİ KOD BU! UYARIYI DEVRE DIŞI BIRAKIR.
+        });
+    </script>
+}

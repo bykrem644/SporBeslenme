@@ -1,46 +1,187 @@
 ﻿@model IEnumerable<SporBeslenmeWeb.Models.Tarifler>
 
-<div class="container mt-4">
-    <h2>Diyet ve Tarifler Listesi</h2>
-    <a href="/Tarifler/Ekle" class="btn btn-primary mb-4">Yeni Tarif Ekle</a>
+@{
+    ViewData["Title"] = "Diyet ve Tarifler";
+}
 
-    <div class="row">
-        @if (Model != null && Model.Any())
+<style>
+    body {
+        background-color: #121418;
+        color: #e0e0e0;
+    }
+
+    .tarif-karti {
+        background: #1e2229;
+        border-radius: 15px;
+        border: 1px solid #2c313a;
+        transition: all 0.3s ease;
+    }
+
+        .tarif-karti:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 71, 87, 0.2);
+            border-color: #ff4757;
+        }
+
+    .makro-rozet {
+        background: #2a2f38;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .neon-text {
+        color: #ff4757;
+        text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+    }
+
+    /* Filtre Butonları Stili */
+    .filter-btn {
+        background: #2a2f38;
+        color: #fff;
+        border: 1px solid #404654;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ff4757;
+            border-color: #ff4757;
+            color: white;
+        }
+</style>
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold neon-text">Diyet ve Tarifler</h2>
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+        {
+            <a href="/Tarifler/Ekle" class="btn btn-danger fw-bold shadow-sm">+ Yeni Tarif Ekle</a>
+        }
+    </div>
+
+    <div class="row mb-4 justify-content-end">
+        <div class="col-md-4">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-dark border-danger text-danger">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="canliAramaKutusu" class="form-control bg-dark text-light border-danger" placeholder="Tarif ara (Adı, malzeme...)">
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center flex-wrap mb-5 gap-2" id="filtreButonlari">
+        <button class="btn btn-danger px-4 fw-bold filter-btn active" data-filter="all">Tümü</button>
+
+        @if (Model != null)
+        {
+            // Veritabanındaki dolu kategorileri bul ve benzersiz olanları listele
+            var kategoriler = Model.Where(m => !string.IsNullOrEmpty(m.Kategori))
+            .Select(m => m.Kategori)
+            .Distinct()
+            .ToList();
+
+            foreach (var kat in kategoriler)
+            {
+                string filterClass = kat.Replace(" ", "-").Replace(".", "").ToLower();
+                <button class="btn btn-outline-danger px-4 fw-bold filter-btn" data-filter="@kat">@kat</button>
+            }
+        }
+    </div>
+
+    <div class="row" id="tarifListesi">
+        @if (Model != null)
         {
             foreach (var item in Model)
             {
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm border-success">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0">@item.Ad</h5>
-                        </div>
+                <div class="col-md-4 mb-4 tarif-item arama-elemani" data-kategori="@item.Kategori">
+                    <div class="card tarif-karti h-100 p-3">
                         <div class="card-body">
-                            <h6 class="card-subtitle mb-3 text-muted">Kategori: @item.Kategori</h6>
+                            <span class="badge bg-danger mb-3 px-3 py-2 kategori-badge">@item.Kategori</span>
+                            <h4 class="card-title fw-bold text-white mb-4">@item.Ad</h4>
 
-                            <div class="mb-3">
-                                <span class="badge bg-primary me-1">Karbonhidrat: %@item.KarbonhidratYuzdesi</span>
-                                <span class="badge bg-danger me-1">Protein: %@item.ProteinYuzdesi</span>
-                                <span class="badge bg-warning text-dark">Yağ: %@item.YagYuzdesi</span>
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="makro-rozet text-info">Karb: %@item.KarbonhidratYuzdesi</div>
+                                <div class="makro-rozet text-success">Pro: %@item.ProteinYuzdesi</div>
+                                <div class="makro-rozet text-warning">Yağ: %@item.YagYuzdesi</div>
                             </div>
 
-                            <h6 class="fw-bold">Malzemeler:</h6>
-                            <p class="card-text small">@item.Malzemeler</p>
-
-                            <h6 class="fw-bold">Hazırlanış:</h6>
-                            <p class="card-text small">@item.Hazirlanis</p>
-                            <hr />
-                            <div class="d-flex justify-content-between">
-                                <a href="/Tarifler/Duzenle/@item.TarifID" class="btn btn-sm btn-warning">Düzenle</a>
-                                <a href="/Tarifler/Sil/@item.TarifID" class="btn btn-sm btn-danger" onclick="return confirm('Bu tarifi silmek istediğinize emin misiniz?');">Sil</a>
+                            <p class="card-text text-muted small">@item.Malzemeler</p>
+                        </div>
+                        <div class="mt-4">
+                            <a href="/Tarifler/Detay/@item.TarifID" class="btn btn-danger w-100 fw-bold mb-2 shadow-sm">Tarifi Oku</a>
+                            <div class="d-flex gap-2">
+                                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                                {
+                                    <a href="/Tarifler/Duzenle/@item.TarifID" class="btn btn-outline-light w-50 fw-bold border-0">Düzenle</a>
+                                    <a href="/Tarifler/Sil/@item.TarifID" class="btn btn-outline-danger w-50 fw-bold border-0" onclick="return confirm('Silmek istediğinize emin misiniz?');">Sil</a>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             }
         }
-        else
-        {
-            <div class="alert alert-info">Henüz sisteme eklenmiş bir tarif bulunmuyor.</div>
-        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // --- KATEGORİ FİLTRELEME SİSTEMİ (Senin Orijinal Kodun) ---
+            const filtreButonlari = document.querySelectorAll('.filter-btn');
+            const tarifler = document.querySelectorAll('.tarif-item');
+
+            filtreButonlari.forEach(buton => {
+                buton.addEventListener('click', function () {
+                    // Aktif butonu işaretle
+                    filtreButonlari.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const secilenKategori = this.getAttribute('data-filter');
+
+                    // İlgili kartları göster/gizle
+                    tarifler.forEach(t => {
+                        if (secilenKategori === 'all' || t.getAttribute('data-kategori') === secilenKategori) {
+                            t.classList.remove('d-none');
+                        } else {
+                            t.classList.add('d-none');
+                        }
+                    });
+
+                    // Kategori değişince arama kutusunu sıfırla (Çakışmayı önlemek için)
+                    document.getElementById("canliAramaKutusu").value = "";
+                });
+            });
+
+            // --- CANLI ARAMA SİSTEMİ (Yeni Eklenen) ---
+            const aramaKutusu = document.getElementById("canliAramaKutusu");
+            const elemanlar = document.querySelectorAll(".arama-elemani");
+
+            if (aramaKutusu) {
+                aramaKutusu.addEventListener("input", function (e) {
+                    const arananKelime = e.target.value.toLowerCase();
+
+                    // Arama yapıldığında "Tümü" butonunu aktif edip diğerlerini kapatalım ki filtreler karışmasın
+                    filtreButonlari.forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-filter="all"]').classList.add('active');
+
+                    elemanlar.forEach(function (eleman) {
+                        const kartMetni = eleman.innerText.toLowerCase();
+
+                        if (kartMetni.includes(arananKelime)) {
+                            eleman.classList.remove("d-none");
+                        } else {
+                            eleman.classList.add("d-none");
+                        }
+                    });
+                });
+            }
+
+        });
+    </script>
+}

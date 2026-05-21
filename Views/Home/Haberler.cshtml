@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Spor Haberleri";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+        <h2 class="text-warning fw-bold"><i class="bi bi-newspaper"></i> Güncel Spor Haberleri</h2>
+        <span class="text-light">Sondan başa doğru sıralanmıştır.</span>
+    </div>
+
+    @if (ViewBag.Hata != null)
+    {
+        <div class="alert alert-danger text-center shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Hata
+            <br /> <small>(Not: API anahtarının aktifleşmesi biraz zaman alabilir.)</small>
+        </div>
+    }
+    else if (ViewBag.Haberler != null && ((List<SporBeslenmeWeb.Models.SporHaberi>)ViewBag.Haberler).Count > 0)
+    {
+        <div class="row">
+            @foreach (var haber in (List<SporBeslenmeWeb.Models.SporHaberi>)ViewBag.Haberler)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 bg-dark border-secondary hover-card shadow-lg p-3 rounded-4">
+                        <div class="card-body d-flex flex-column p-0">
+                            <span class="badge bg-danger mb-3 align-self-start">@haber.Kaynak</span>
+
+                            <h6 class="card-title text-white fw-bold mb-3" style="font-size: 1.05rem;">
+                                @(haber.Baslik.Length > 65 ? haber.Baslik.Substring(0, 65) + "..." : haber.Baslik)
+                            </h6>
+
+                            <p class="text-light mb-4" style="font-size: 0.85rem; opacity: 0.7;">
+                                @(haber.Aciklama.Length > 100 ? haber.Aciklama.Substring(0, 100) + "..." : haber.Aciklama)
+                            </p>
+
+                            <a href="@haber.Url" target="_blank" class="btn btn-outline-warning btn-sm mt-auto fw-bold w-100 rounded-pill">
+                                Haberi Oku <i class="bi bi-box-arrow-up-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

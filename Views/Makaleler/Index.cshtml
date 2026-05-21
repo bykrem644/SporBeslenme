@@ -1,0 +1,107 @@
+﻿@using SporBeslenmeWeb.Models
+@model IEnumerable<Makale>
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-info pb-3">
+        <div>
+            <h2 class="text-info fw-bold mb-0">Bilgi Bankası & Makaleler</h2>
+            <p class="text-light mt-2 mb-0">Uzman eğitmenlerden tavsiyeler, beslenme rehberleri ve fazlası.</p>
+        </div>
+        <div>
+            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+            {
+                <a asp-action="Ekle" class="btn btn-info fw-bold text-dark fs-5">
+                    + Yeni Makale Yaz
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row mb-4 justify-content-end">
+        <div class="col-md-4">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-dark border-info text-info">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="canliAramaKutusu" class="form-control bg-dark text-light border-info" placeholder="Makale ara (Başlık, yazar, içerik...)">
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert text-center py-5" style="background: #1e2229; border: 1px dashed #0dcaf0;">
+            <h4 class="text-secondary mb-3">Henüz yayınlanmış bir makale bulunmuyor.</h4>
+            <p class="text-light">Sağ üstteki butona tıklayarak ilk uzman makalesini yayınlayabilirsin.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4 arama-elemani">
+                    <div class="card h-100 shadow-lg hover-card transition-all" style="background: #1e2229; border: 1px solid #444; border-radius: 12px; overflow: hidden;">
+
+                        @if (!string.IsNullOrEmpty(item.KapakGorseliUrl))
+                        {
+                            <img src="@item.KapakGorseliUrl" class="card-img-top border-bottom border-secondary" alt="@item.Baslik" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-dark border-bottom border-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-secondary"><i class="bi bi-image text-muted fs-1 mb-2"></i><br />Görsel Yok</span>
+                            </div>
+                        }
+
+                        <div class="card-body text-light d-flex flex-column">
+                            <h5 class="card-title text-info fw-bold">@item.Baslik</h5>
+                            <p class="card-text text-secondary small mb-3">
+                                ✍️ @item.Yazar | 📅 @item.YayinTarihi.ToString("dd MMM yyyy")
+                            </p>
+                            <p class="card-text" style="opacity: 0.85;">@item.Ozet</p>
+                        </div>
+
+                        <div class="card-footer border-0 bg-transparent pb-4 px-4 d-flex gap-2 mt-auto">
+                            <a asp-action="Detay" asp-route-id="@item.Id" class="btn btn-info flex-grow-1 fw-bold text-dark rounded-pill">Oku</a>
+
+                            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Duzenle" asp-route-id="@item.Id" class="btn btn-outline-warning fw-bold rounded-pill px-3">Düzenle</a>
+                                <a asp-action="Sil" asp-route-id="@item.Id" class="btn btn-outline-danger fw-bold rounded-pill px-3" onclick="return confirm('Bu makaleyi silmek istediğinize emin misiniz?');">Sil</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const aramaKutusu = document.getElementById("canliAramaKutusu");
+            const elemanlar = document.querySelectorAll(".arama-elemani");
+
+            if (aramaKutusu) {
+                aramaKutusu.addEventListener("input", function (e) {
+                    const arananKelime = e.target.value.toLowerCase();
+
+                    elemanlar.forEach(function (eleman) {
+                        // Kartın içindeki her şeyi (Başlık, yazar, özet) metin olarak alıyoruz
+                        const kartMetni = eleman.innerText.toLowerCase();
+
+                        // Aranan harfler kartın içinde varsa göster, yoksa gizle
+                        if (kartMetni.includes(arananKelime)) {
+                            eleman.classList.remove("d-none");
+                        } else {
+                            eleman.classList.add("d-none");
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

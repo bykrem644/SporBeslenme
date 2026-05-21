@@ -7,37 +7,39 @@ using SporBeslenmeWeb.Models;
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using SporBeslenmeWeb.Hubs;
 
 namespace SporBeslenmeWeb.Controllers
 {
-    public class EgzersizlerController : Controller
+    [Authorize]
+    public class EgzersizlerController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment, IHubContext<NotificationHub> hubContext) : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly ApplicationDbContext _context = context;
+        private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+        private readonly IHubContext<NotificationHub> _hubContext; // Yeni eklendi
 
-        public EgzersizlerController(ApplicationDbContext context, IWebHostEnvironment hostEnvironment)
-        {
-            _context = context;
-            _hostEnvironment = hostEnvironment;
-        }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var egzersizler = _context.Egzersizler.ToList();
             return View(egzersizler);
         }
-
+       
+        [Authorize(Roles = "Admin")]
         public IActionResult Ekle()
         {
             ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGrupID", "Ad");
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Ekle(Egzersizler egzersiz, IFormFile VideoDosyasi)
         {
             if (ModelState.IsValid)
             {
+                // Video yükleme kodun aynen kalıyor
                 if (VideoDosyasi != null && VideoDosyasi.Length > 0)
                 {
                     string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -45,28 +47,29 @@ namespace SporBeslenmeWeb.Controllers
                     string videoKlasoru = Path.Combine(wwwRootPath, "videos");
 
                     if (!Directory.Exists(videoKlasoru))
-                    {
                         Directory.CreateDirectory(videoKlasoru);
-                    }
 
                     string tamYol = Path.Combine(videoKlasoru, dosyaAdi);
-
                     using (var fileStream = new FileStream(tamYol, FileMode.Create))
                     {
                         VideoDosyasi.CopyTo(fileStream);
                     }
-
                     egzersiz.VideoYolu = "/videos/" + dosyaAdi;
                 }
 
+                // --- BURASI KRİTİK ---
+                // View'daki asp-for="HedefKitle" ve asp-for="RiskliDurumlar" 
+                // otomatik olarak 'egzersiz' objesinin içine dolacak.
                 _context.Egzersizler.Add(egzersiz);
                 _context.SaveChanges();
+                _hubContext.Clients.All.SendAsync("YeniBildirimAl", $"💪 Yeni bir egzersiz eklendi: '{egzersiz.Ad}' Hemen dene!");
                 return RedirectToAction("Index");
             }
 
-            ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGrupID", "Ad", egzersiz.KasGrupID);
+            ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGroupID", "Ad", egzersiz.KasGrupID);
             return View(egzersiz);
         }
+        [Authorize(Roles = "Admin")]
         // SİLME İŞLEMİ
         public IActionResult Sil(int id)
         {
@@ -79,7 +82,7 @@ namespace SporBeslenmeWeb.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = "Admin")]
         // DÜZENLEME İŞLEMİ (Sayfayı Açma)
         public IActionResult Duzenle(int id)
         {
@@ -93,7 +96,7 @@ namespace SporBeslenmeWeb.Controllers
             ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGrupID", "Ad", egzersiz.KasGrupID);
             return View(egzersiz);
         }
-
+        [Authorize(Roles = "Admin")]
         // DÜZENLEME İŞLEMİ (Kaydetme)
         [HttpPost]
         public IActionResult Duzenle(Egzersizler egzersiz, IFormFile? YeniVideoDosyasi)
@@ -124,6 +127,31 @@ namespace SporBeslenmeWeb.Controllers
 
             ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGrupID", "Ad", egzersiz.KasGrupID);
             return View(egzersiz);
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult AsistanYanitla([FromBody] string durum)
+        {
+            string yanit = "";
+
+            if (durum == "Menisküsüm var")
+            {
+                yanit = "Menisküs için diz eklemine yük bindirmeyen hareketler önerilir. Yüzme, düz yolda yürüyüş ve düz bacak kaldırma egzersizlerini yapabilirsin. Squat ve Lunge gibi hareketlerden şimdilik kesinlikle uzak durmalısın.";
+            }
+            else if (durum == "Bel fıtığım var")
+            {
+                yanit = "Bel fıtığı için omurgaya binen dikey yükü azaltmalıyız. Deadlift veya Barbell Squat yerine; Plank ve esneme ağırlıklı hareketler senin için çok daha güvenli ve geliştiricidir.";
+            }
+            else if (durum == "Sadece vücut ağırlığı")
+            {
+                yanit = "Harika bir seçim. Ekipmana ihtiyacın yok. Şınav, barfiks ve mekik ile tüm vücudunu etkili bir şekilde çalıştırabilirsin. Kas haritasından ilgili bölgeleri seçerek hareketlerin videolarına bakabilirsin.";
+            }
+            else
+            {
+                yanit = "Sana özel bir program oluşturmam için soldaki kas haritasından çalışmak istediğin bölgeyi seçebilirsin.";
+            }
+
+            return Json(new { mesaj = yanit });
         }
     }
 }

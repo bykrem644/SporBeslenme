@@ -1,0 +1,50 @@
+﻿@using SporBeslenmeWeb.Models
+@model ProgramVideosu
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="alert alert-success bg-dark text-success border-success text-center">
+                <span class="fw-bold fs-5">@ViewBag.ProgramAdi</span> programına video ekliyorsunuz.
+            </div>
+
+            <div class="card" style="background: #1e2229; border: 1px solid #0dcaf0;">
+                <div class="card-header border-info text-center py-3">
+                    <h4 class="text-info fw-bold mb-0">2. Adım: Egzersiz Videosu Yükle</h4>
+                </div>
+                <div class="card-body text-light p-4">
+                    <form asp-action="VideoEkle" method="post" enctype="multipart/form-data">
+
+                        <input type="hidden" asp-for="AntrenmanProgramiId" value="@ViewBag.ProgramId" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-9">
+                                <label class="form-label text-info fw-bold">Hareket Adı (Video Başlığı)</label>
+                                <input type="text" asp-for="VideoBaslik" class="form-control bg-dark text-light border-secondary" placeholder="Örn: Bench Press" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-info fw-bold">Oynatma Sırası</label>
+                                <input type="number" asp-for="Sira" class="form-control bg-dark text-light border-secondary" value="1" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">Hoca Notu / Açıklama</label>
+                            <textarea asp-for="Aciklama" class="form-control bg-dark text-light border-secondary" rows="2" placeholder="Dirsekleri fazla açmayın..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-info fw-bold">MP4 Video Dosyası Seç</label>
+                            <input type="file" name="VideoDosyasi" class="form-control bg-dark text-light border-secondary" accept="video/mp4" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">Bu Videoyu Programa Ekle</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center border-0 bg-transparent mb-2">
+                    <a asp-action="Index" class="btn btn-outline-light btn-sm">Video Ekleme İşlemini Bitir ve Listeye Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

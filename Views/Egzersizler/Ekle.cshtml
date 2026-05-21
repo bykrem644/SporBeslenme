@@ -1,50 +1,77 @@
 ﻿@model SporBeslenmeWeb.Models.Egzersizler
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-lg mt-4">
-                <div class="card-header bg-dark text-white text-center py-4">
+            <div class="card shadow-lg border-secondary rounded-lg mt-4 bg-dark">
+                <div class="card-header bg-black text-white text-center py-4 border-bottom border-secondary">
                     <h4 class="mb-0 fw-bold">Yeni Egzersiz Ekle</h4>
                 </div>
-                <div class="card-body p-5 bg-light">
+                <div class="card-body p-5 bg-dark">
 
                     <form method="post" action="/Egzersizler/Ekle" enctype="multipart/form-data">
 
+                        @if (ViewBag.GizliHata != null && ViewBag.GizliHata != "")
+                        {
+                            <div class="alert alert-danger text-center fw-bold shadow-lg mb-4" style="border: 2px solid #dc3545; background-color: #2c0b0e;">
+                                <span class="text-light">SİSTEM HATASI:</span><br />
+                                <span class="text-warning">@ViewBag.GizliHata</span>
+                            </div>
+                        }
+
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Egzersiz Adı</label>
-                            <input type="text" name="Ad" class="form-control form-control-lg shadow-sm" required />
+                            <label class="form-label fw-bold text-info">Egzersiz Adı</label>
+                            <input asp-for="Ad" class="form-control form-control-lg bg-dark text-light border-secondary shadow-sm" required />
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Hangi Kas Grubu</label>
-                            <select name="KasGrupID" class="form-select form-select-lg shadow-sm" asp-items="ViewBag.KasGruplari" required>
+                            <label class="form-label fw-bold text-info">Hangi Kas Grubu?</label>
+                            <select asp-for="KasGrupID" class="form-select form-select-lg bg-dark text-light border-secondary shadow-sm" asp-items="ViewBag.KasGruplari" required>
                                 <option value="">Lütfen bir kas grubu seçin</option>
                             </select>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Zorluk Seviyesi</label>
-                            <input type="text" name="ZorlukSeviyesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: Başlangıç, Orta, İleri" />
+                            <label class="form-label fw-bold text-info">Zorluk Seviyesi</label>
+                            <input asp-for="ZorlukSeviyesi" class="form-control form-control-lg bg-dark text-light border-secondary shadow-sm" placeholder="Örn: Başlangıç, Orta, İleri" />
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Nasıl Yapılır</label>
-                            <textarea name="NasilYapilir" class="form-control shadow-sm" rows="4"></textarea>
+                            <label class="form-label fw-bold text-info">Nasıl Yapılır?</label>
+                            <textarea asp-for="NasilYapilir" class="form-control bg-dark text-light border-secondary shadow-sm" rows="4"></textarea>
+                        </div>
+
+                        <div class="p-4 mb-4 rounded-3 border border-warning shadow-sm" style="background-color: #1a1d20;">
+                            <h6 class="text-warning fw-bold mb-3"><i class="bi bi-cpu"></i> Algoritma Kriterleri</h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-light">Hedef Kitle</label>
+                                <select asp-for="HedefKitle" class="form-select bg-dark text-light border-warning">
+                                    <option value="Genel">Herkes İçin (Genel)</option>
+                                    <option value="KasKazanimi">Kas Kazanımı / Hacim</option>
+                                    <option value="KiloVerme">Kilo Verme / Yağ Yakımı</option>
+                                    <option value="Kondisyon">Kondisyon / Güç</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="form-label fw-bold text-light">Riskli Durumlar (Virgülle Ayır)</label>
+                                <input asp-for="RiskliDurumlar" class="form-control bg-dark text-light border-danger" placeholder="Örn: Bel Fıtığı, Menisküs" />
+                                <small class="text-secondary">Bu rahatsızlığı olanlara bu hareket gösterilmez.</small>
+                            </div>
                         </div>
 
                         <div class="mb-5">
-                            <label class="form-label fw-bold text-secondary">Egzersiz Videosu Yükle</label>
-                            <input type="file" name="VideoDosyasi" class="form-control form-control-lg shadow-sm" accept="video/mp4" />
+                            <label class="form-label fw-bold text-info">Egzersiz Videosu Yükle</label>
+                            <input type="file" name="VideoDosyasi" class="form-control form-control-lg bg-dark text-light border-secondary shadow-sm" accept="video/mp4" />
                         </div>
 
                         <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">Kaydet</button>
-                            <a href="/Egzersizler/Index" class="btn btn-outline-dark btn-lg fw-bold">Listeye Geri Dön</a>
+                            <a href="/Egzersizler/Index" class="btn btn-outline-light btn-lg fw-bold">Listeye Geri Dön</a>
                         </div>
 
                     </form>
-
                 </div>
             </div>
         </div>

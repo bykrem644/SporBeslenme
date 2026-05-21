@@ -1,0 +1,63 @@
+﻿@using SporBeslenmeWeb.Models
+@model Makale
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="background: #1e2229; border: 1px solid #ffc107; box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);">
+                <div class="card-header border-warning text-center py-3">
+                    <h4 class="text-warning fw-bold mb-0">Makaleyi Düzenle</h4>
+                </div>
+                <div class="card-body text-light p-4">
+                    <form asp-action="Duzenle" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning fw-bold">Makale Başlığı</label>
+                            <input type="text" asp-for="Baslik" class="form-control bg-dark text-light border-secondary" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-warning fw-bold">Yazar</label>
+                                <input type="text" asp-for="Yazar" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-warning fw-bold">Yeni Fotoğraf (Değişmeyecekse Boş Bırak)</label>
+                                <input type="file" name="YeniKapakGorseli" class="form-control bg-dark text-light border-secondary" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded" style="border: 1px dashed #ffc107; background: rgba(255, 193, 7, 0.05);">
+                            <label class="form-label text-warning fw-bold">Yeni PDF Ekle/Değiştir (Opsiyonel)</label>
+                            <input type="file" name="YeniPdfDosyasi" class="form-control bg-dark text-light border-warning" accept="application/pdf">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning fw-bold">Kısa Özet</label>
+                            <textarea asp-for="Ozet" class="form-control bg-dark text-light border-secondary" rows="2" required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-warning fw-bold">Makale İçeriği</label>
+                            <textarea id="IcerikEditoru" asp-for="Icerik" class="form-control bg-dark text-light border-secondary" rows="10"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 fw-bold text-dark py-2 fs-5">Değişiklikleri Kaydet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('IcerikEditoru', {
+            uiColor: '#1e2229',
+            language: 'tr',
+            versionCheck: false
+        });
+    </script>
+}

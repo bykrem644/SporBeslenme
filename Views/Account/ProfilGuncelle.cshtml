@@ -1,0 +1,233 @@
+﻿@model SporBeslenmeWeb.Models.KullaniciDetay
+
+@{
+    // Kullanıcının daha önce seçtiği hastalıkları ve alerjileri hafızadan çekiyoruz (Kutucukları dolu getirmek için)
+    var mevcutHastaliklar = Model.Hastaliklar?.Split(", ").ToList() ?? new List<string>();
+    var mevcutAlerjiler = Model.BeslenmeKisitlamalari?.Split(", ").ToList() ?? new List<string>();
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4 shadow-lg rounded-4" style="background: #1e2229; border: 1px solid #0dcaf0;">
+
+                <div class="text-center mb-4">
+                    <h2 class="text-info fw-bold">Profilini Güncelle</h2>
+                    <p class="text-secondary small">Bilgilerini eksiksiz girerek sana özel algoritmayı mükemmelleştir.</p>
+                </div>
+
+                <form asp-action="ProfilGuncelle" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label text-light fw-bold small">Boyun</label>
+                            <div class="input-group">
+                                <input type="number" asp-for="Boy" class="form-control bg-dark text-light border-secondary text-center" required>
+                                <span class="input-group-text bg-dark text-info border-secondary">cm</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-light fw-bold small">Kilon</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" asp-for="Kilo" class="form-control bg-dark text-light border-secondary text-center" required>
+                                <span class="input-group-text bg-dark text-info border-secondary">kg</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-light fw-bold small">Yaşın</label>
+                            <div class="input-group">
+                                <input type="number" asp-for="Yas" class="form-control bg-dark text-light border-secondary text-center" required>
+                                <span class="input-group-text bg-dark text-info border-secondary">yaş</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="form-label text-light fw-bold small mb-2">Ana Hedefin</label>
+                    <div class="row g-2 mb-4 text-center">
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="Hedef" value="KiloVerme" id="h1" required>
+                            <label class="btn btn-outline-info w-100 py-2" for="h1">🔥<br><small>Zayıfla</small></label>
+                        </div>
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="Hedef" value="KasKazanimi" id="h2">
+                            <label class="btn btn-outline-info w-100 py-2" for="h2">💪<br><small>Kas Yap</small></label>
+                        </div>
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="Hedef" value="Kondisyon" id="h3">
+                            <label class="btn btn-outline-info w-100 py-2" for="h3">⚡<br><small>Güçlen</small></label>
+                        </div>
+                    </div>
+
+                    <h5 class="text-info border-bottom border-secondary pb-2 mb-3 mt-4">Antrenman Düzenin</h5>
+                    <div class="row g-2 mb-4 text-center">
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="AntrenmanSeviyesi" value="Baslangic" id="seviye1" required>
+                            <label class="btn btn-outline-info w-100 py-2" for="seviye1">🥉<br><small>Haftada 3 Gün</small><br><span style="font-size:0.7rem">(Tüm Vücut)</span></label>
+                        </div>
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="AntrenmanSeviyesi" value="Orta" id="seviye2">
+                            <label class="btn btn-outline-info w-100 py-2" for="seviye2">🥈<br><small>Haftada 4 Gün</small><br><span style="font-size:0.7rem">(Alt/Üst Vücut)</span></label>
+                        </div>
+                        <div class="col-4">
+                            <input type="radio" class="btn-check" asp-for="AntrenmanSeviyesi" value="Ileri" id="seviye3">
+                            <label class="btn btn-outline-info w-100 py-2" for="seviye3">🥇<br><small>Haftada 5 Gün</small><br><span style="font-size:0.7rem">(Bölgesel/Split)</span></label>
+                        </div>
+                    </div>
+
+                    <h5 class="text-info border-bottom border-secondary pb-2 mb-3 mt-4">Vücut Ölçülerin (Opsiyonel)</h5>
+                    <div class="row g-2 mb-4">
+                        <div class="col-3">
+                            <label class="form-label text-light small mb-1">Omuz</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" asp-for="Omuz" class="form-control bg-dark text-light border-secondary text-center">
+                                <span class="input-group-text bg-dark text-info border-secondary">cm</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label text-light small mb-1">Göğüs</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" asp-for="Gogus" class="form-control bg-dark text-light border-secondary text-center">
+                                <span class="input-group-text bg-dark text-info border-secondary">cm</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label text-light small mb-1">Bel</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" asp-for="Bel" class="form-control bg-dark text-light border-secondary text-center">
+                                <span class="input-group-text bg-dark text-info border-secondary">cm</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label text-light small mb-1">Kol</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" asp-for="Kol" class="form-control bg-dark text-light border-secondary text-center">
+                                <span class="input-group-text bg-dark text-info border-secondary">cm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2 mb-3 mt-4">Sağlık Durumu (Varsa İşaretle)</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12"><small class="text-secondary fw-bold">EKLEM VE KEMİK SAKATLIKLARI</small></div>
+
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Bel Fıtığı" id="h1" @(mevcutHastaliklar.Contains("Bel Fıtığı") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h1">Bel Fıtığı</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Boyun Fıtığı" id="h2" @(mevcutHastaliklar.Contains("Boyun Fıtığı") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h2">Boyun Fıtığı</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Menisküs / Diz" id="h3" @(mevcutHastaliklar.Contains("Menisküs / Diz") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h3">Menisküs / Diz</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Omuz Sakatlığı" id="h4" @(mevcutHastaliklar.Contains("Omuz Sakatlığı") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h4">Omuz Sakatlığı</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Bilek Hassasiyeti" id="h5" @(mevcutHastaliklar.Contains("Bilek Hassasiyeti") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h5">Bilek Hassasiyeti</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-secondary bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Skolyoz" id="h6" @(mevcutHastaliklar.Contains("Skolyoz") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h6">Skolyoz / Omurga</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3"><small class="text-secondary fw-bold">KRONİK HASTALIKLAR</small></div>
+
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Astım" id="h7" @(mevcutHastaliklar.Contains("Astım") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h7">Astım / KOAH</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Kalp Rahatsızlığı" id="h8" @(mevcutHastaliklar.Contains("Kalp Rahatsızlığı") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h8">Kalp Rahatsızlığı</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Tansiyon" id="h9" @(mevcutHastaliklar.Contains("Tansiyon") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h9">Yüksek Tansiyon</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Şeker Hastalığı" id="h10" @(mevcutHastaliklar.Contains("Şeker Hastalığı") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h10">Diyabet / Şeker</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Vertigo" id="h11" @(mevcutHastaliklar.Contains("Vertigo") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h11">Vertigo / Baş Dönmesi</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenHastaliklar" value="Diğer" id="h12" @(mevcutHastaliklar.Contains("Diğer") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="h12">Diğer</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom border-secondary pb-2 mb-3 mt-4">Beslenme Alışkanlıkları</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12"><small class="text-secondary fw-bold">ALERJİ VE DİYET TİPİ</small></div>
+
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenAlerjiler" value="Gluten" id="bes1" @(mevcutAlerjiler.Contains("Gluten") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="bes1">Gluten Hassasiyeti</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenAlerjiler" value="Laktoz" id="bes2" @(mevcutAlerjiler.Contains("Laktoz") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="bes2">Laktoz İntoleransı</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <div class="form-check p-2 rounded border border-warning bg-dark">
+                                <input class="form-check-input ms-1" type="checkbox" name="SecilenAlerjiler" value="Vegan" id="bes3" @(mevcutAlerjiler.Contains("Vegan") ? "checked" : "")>
+                                <label class="form-check-label text-light ms-2 small" for="bes3">Vegan / Vejetaryen</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label class="form-label text-light fw-bold small">Kesinlikle Sevmediğin/Yemediğin Besinler</label>
+                            <input type="text" asp-for="SevmedigiBesinler" class="form-control bg-dark text-light border-secondary" placeholder="Örn: Tavuk, Brokoli, Mantar (Virgülle ayır)">
+                            <small class="text-secondary" style="font-size: 0.75rem;">Bu besinleri içeren tarifler sana önerilmeyecek.</small>
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom border-secondary pb-2 mb-3 mt-4">Profil Fotoğrafı Güncelle</h5>
+                    <div class="mb-5">
+                        <input type="file" name="ProfilFoto" class="form-control bg-dark text-light border-secondary" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-info w-100 fw-bold py-3 fs-5 text-dark rounded-3 shadow-lg">
+                        DEĞİŞİKLİKLERİ KAYDET 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

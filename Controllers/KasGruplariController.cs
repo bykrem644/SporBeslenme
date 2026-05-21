@@ -2,9 +2,11 @@
 using SporBeslenmeWeb.Data;
 using SporBeslenmeWeb.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SporBeslenmeWeb.Controllers
 {
+    [Authorize]
     public class KasGruplariController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -13,18 +15,18 @@ namespace SporBeslenmeWeb.Controllers
         {
             _context = context;
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var kasGruplari = _context.KasGruplari.ToList();
             return View(kasGruplari);
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Ekle()
         {
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Ekle(KasGruplari kasGrubu)
         {
@@ -36,6 +38,7 @@ namespace SporBeslenmeWeb.Controllers
             }
             return View(kasGrubu);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Sil(int id)
         {
             var kasGrubu = _context.KasGruplari.Find(id);
@@ -46,7 +49,7 @@ namespace SporBeslenmeWeb.Controllers
             }
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Duzenle(int id)
         {
             var kasGrubu = _context.KasGruplari.Find(id);
@@ -56,7 +59,7 @@ namespace SporBeslenmeWeb.Controllers
             }
             return View(kasGrubu);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Duzenle(KasGruplari kasGrubu)
         {

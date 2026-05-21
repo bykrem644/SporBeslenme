@@ -12,5 +12,7 @@ namespace SporBeslenmeWeb.Models
         public string? ZorlukSeviyesi { get; set; }
         public string? GorselYolu { get; set; }
         public string? VideoYolu { get; set; }
+        public string? HedefKitle { get; set; } // "KiloVerme", "KasKazanimi", "Kondisyon"
+        public string? RiskliDurumlar { get; set; } // "Bel Fıtığı", "Menisküs" (Hangi durumda bu hareket yapılmamalı?)
     }
 }

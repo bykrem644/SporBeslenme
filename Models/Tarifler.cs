@@ -14,6 +14,9 @@ namespace SporBeslenmeWeb.Models
         public string? Malzemeler { get; set; }
         public string? Hazirlanis { get; set; }
         public string? GorselYolu { get; set; }
+        public string? TarifKategorisi { get; set; } // "YuksekProtein", "DusukKalori", "HacimKazanma"
+        public string? IcerdigiAlerjenler { get; set; } // Örn: Gluten, Laktoz
+        public string? AnaMalzemeler { get; set; } // Örn: Tavuk, Kırmızı Et, Yulaf
 
     }
 }

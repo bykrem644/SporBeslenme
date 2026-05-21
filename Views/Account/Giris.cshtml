@@ -1,0 +1,48 @@
+﻿@using SporBeslenmeWeb.Models
+@model GirisViewModel
+
+<div class="container mt-5 mb-5 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card p-4 shadow-lg rounded-4" style="background: #1e2229; border: 1px solid #0dcaf0; box-shadow: 0 0 20px rgba(13, 202, 240, 0.15) !important;">
+
+                <div class="text-center mb-4">
+                    <h2 class="text-info fw-bold">Hoş Geldiniz</h2>
+                    <p class="text-secondary">Erişim sağlamak için giriş yapın.</p>
+                </div>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger fw-bold mb-3"></div>
+
+                <form asp-action="Giris" method="post">
+                    <div class="mb-3">
+                        <label class="form-label text-light fw-bold">Kullanıcı Adı</label>
+                        <input type="text" asp-for="KullaniciAdi" class="form-control bg-dark text-light border-secondary" placeholder="Kullanıcı adınızı girin">
+                        <span asp-validation-for="KullaniciAdi" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-light fw-bold">Şifre</label>
+                        <input type="password" asp-for="Sifre" class="form-control bg-dark text-light border-secondary" placeholder="••••••••">
+                        <span asp-validation-for="Sifre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input bg-dark border-secondary" type="checkbox" asp-for="BeniHatirla">
+                        <label class="form-check-label text-secondary" asp-for="BeniHatirla">
+                            Beni Hatırla
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-info w-100 fw-bold fs-5 py-2 rounded-3 text-dark">Giriş Yap</button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <p class="text-secondary mb-0">
+                        Henüz hesabın yok mu?
+                        <a asp-action="Kayit" class="text-info fw-bold text-decoration-none">Hemen Kayıt Ol</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

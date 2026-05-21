@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Sistem Güvenlik Komuta Merkezi";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-danger pb-2">
+        <h2 class="text-danger fw-bold"><i class="bi bi-shield-lock-fill"></i> Sistem İzleme Radarı</h2>
+        <span class="badge bg-danger fs-6 text-uppercase px-3 py-2">Sistem Yöneticisi</span>
+    </div>
+
+    <h5 class="text-info mb-3"><i class="bi bi-activity"></i> Sunucu Sağlığı (Server Health)</h5>
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card bg-dark border-info shadow-sm">
+                <div class="card-body text-center">
+                    <h1 class="text-info fw-bold display-4" id="onlineKisiSayisi">0</h1>
+                    <span class="text-light">Aktif Online Kullanıcı</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-success shadow-sm">
+                <div class="card-body text-center">
+                    <h1 class="text-success fw-bold display-4" id="sunucuPing">-- ms</h1>
+                    <span class="text-light">Ortalama Yanıt Süresi</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-warning shadow-sm">
+                <div class="card-body text-center">
+                    <h1 class="text-warning fw-bold display-4">@(((List<SporBeslenmeWeb.Models.EngellenenIP>)ViewBag.KaraListe).Count)</h1>
+                    <span class="text-light">Engellenen Toplam IP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <h5 class="text-warning mb-3"><i class="bi bi-terminal"></i> Son Gerçekleşen Olaylar</h5>
+            <div class="card bg-dark border-secondary shadow-lg mb-4" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-dark table-hover mb-0" style="font-size: 0.85rem;">
+                    <thead class="table-active" style="position: sticky; top: 0;">
+                        <tr>
+                            <th>Tarih/Saat</th>
+                            <th>Kullanıcı</th>
+                            <th>IP Adresi</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in (List<SporBeslenmeWeb.Models.GuvenlikLog>)ViewBag.Loglar)
+                        {
+                            <tr>
+                                <td class="text-light">@log.Tarih.ToString("dd.MM HH:mm:ss")</td>
+                                <td class="text-warning">@log.KullaniciAdi</td>
+                                <td class="text-success font-monospace">@log.IPAdresi</td>
+                                <td class="text-info">@log.IslemTuru <br><small class="text-secondary">@log.Detay</small></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <h5 class="text-danger mb-3"><i class="bi bi-slash-circle"></i> IP Kara Listesi (Blacklist)</h5>
+
+            <form asp-action="IPEngelle" method="post" class="mb-3 d-flex gap-2">
+                <input type="text" name="ipAdresi" class="form-control form-control-sm bg-dark text-light border-danger" placeholder="Engellenecek IP (Örn: 192.168.1.5)" required>
+                <input type="text" name="sebep" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Sebep (Opsiyonel)">
+                <button type="submit" class="btn btn-danger btn-sm fw-bold px-3">BANLA</button>
+            </form>
+
+            <div class="card bg-dark border-danger shadow-lg" style="max-height: 330px; overflow-y: auto;">
+                <table class="table table-dark table-striped mb-0" style="font-size: 0.85rem;">
+                    <thead class="table-active" style="position: sticky; top: 0;">
+                        <tr>
+                            <th>IP Adresi</th>
+                            <th>Sebep</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ip in (List<SporBeslenmeWeb.Models.EngellenenIP>)ViewBag.KaraListe)
+                        {
+                            <tr>
+                                <td class="text-danger fw-bold font-monospace align-middle">@ip.IPAdresi</td>
+                                <td class="text-light align-middle">@ip.Sebep <br><small class="text-secondary">@ip.EngellenmeTarihi.ToString("dd.MM.yyyy")</small></td>
+                                <td class="align-middle text-end">
+                                    <form asp-action="IPEngelKaldir" method="post">
+                                        <input type="hidden" name="id" value="@ip.Id" />
+                                        <button type="submit" class="btn btn-outline-success btn-sm">Kaldır</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    @section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // SADECE SUNUCU YANIT SÜRESİ (PING) HESAPLAMA MOTORU
+            // Online kişi sayısını artık merkezi olarak _Layout.cshtml hallediyor!
+            setInterval(() => {
+                const baslangicZamani = Date.now();
+                
+                fetch('/').then(() => {
+                    const ping = Date.now() - baslangicZamani;
+                    const pingGosterge = document.getElementById("sunucuPing");
+                    
+                    if (pingGosterge) {
+                        pingGosterge.innerText = ping + " ms";
+
+                        // Hıza göre rengi değiştir
+                        if(ping < 100) {
+                            pingGosterge.className = "text-success fw-bold display-4";
+                        } else if (ping < 300) {
+                            pingGosterge.className = "text-warning fw-bold display-4";
+                        } else {
+                            pingGosterge.className = "text-danger fw-bold display-4";
+                        }
+                    }
+                });
+            }, 3000); 
+        });
+    </script>
+}

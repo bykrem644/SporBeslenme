@@ -1,59 +1,71 @@
 ﻿@model SporBeslenmeWeb.Models.Tarifler
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-lg mt-4">
-                <div class="card-header bg-dark text-white text-center py-4">
-                    <h4 class="mb-0 fw-bold">Yeni Tarif Ekle</h4>
+            <div class="card shadow-lg border-0 rounded-4" style="background: #1e2229; border: 1px solid #0dcaf0;">
+                <div class="card-header border-info text-center py-4 bg-transparent">
+                    <h4 class="text-info fw-bold mb-0">✨ Yeni Tarif Ekle</h4>
                 </div>
-                <div class="card-body p-5 bg-light">
+                <div class="card-body p-5 text-light">
 
-                    <form method="post" action="/Tarifler/Ekle">
-                        <div asp-validation-summary="All" class="text-danger fw-bold mb-3"></div>
+                    <form asp-action="Ekle" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Tarif Adı</label>
-                            <input type="text" name="Ad" class="form-control form-control-lg shadow-sm" required />
+                            <label class="form-label text-info fw-bold">Tarif Adı</label>
+                            <input type="text" asp-for="Ad" class="form-control bg-dark text-light border-secondary shadow-sm" required>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Kategori</label>
-                            <input type="text" name="Kategori" class="form-control form-control-lg shadow-sm" placeholder="Örn: Kahvaltı, Antrenman Sonrası" />
+                            <label class="form-label text-info fw-bold">Kategori</label>
+                            <input type="text" asp-for="TarifKategorisi" class="form-control bg-dark text-light border-secondary shadow-sm" placeholder="Örn: Kahvaltı, Antrenman Sonrası" required>
                         </div>
 
                         <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold text-secondary">Karbonhidrat Yüzdesi</label>
-                                <input type="number" name="KarbonhidratYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 60" />
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label text-info fw-bold">Karb. (%)</label>
+                                <input type="number" asp-for="KarbonhidratYuzdesi" class="form-control bg-dark text-light border-secondary text-center" placeholder="Örn: 50" required>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold text-secondary">Protein Yüzdesi</label>
-                                <input type="number" name="ProteinYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 30" />
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label text-info fw-bold">Protein (%)</label>
+                                <input type="number" asp-for="ProteinYuzdesi" class="form-control bg-dark text-light border-secondary text-center" placeholder="Örn: 30" required>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold text-secondary">Yağ Yüzdesi</label>
-                                <input type="number" name="YagYuzdesi" class="form-control form-control-lg shadow-sm" placeholder="Örn: 10" />
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label text-info fw-bold">Yağ (%)</label>
+                                <input type="number" asp-for="YagYuzdesi" class="form-control bg-dark text-light border-secondary text-center" placeholder="Örn: 20" required>
+                            </div>
+                        </div>
+
+                        <div class="p-4 mb-4 rounded-3 border border-warning" style="background: rgba(255, 193, 7, 0.05);">
+                            <h6 class="text-warning fw-bold mb-3"><i class="bi bi-robot"></i> Algoritma Filtreleri</h6>
+
+                            <div class="mb-3">
+                                <label class="form-label text-light small fw-bold">Alerjen Etiketleri (Virgülle Ayır)</label>
+                                <input type="text" asp-for="IcerdigiAlerjenler" class="form-control bg-dark text-light border-warning" placeholder="Örn: Gluten, Laktoz, Vegan">
+                                <small class="text-secondary" style="font-size: 0.75rem;">Profilinde bu alerjileri seçenlere bu tarif ÖNERİLMEYECEK.</small>
+                            </div>
+
+                            <div>
+                                <label class="form-label text-light small fw-bold">Ana Malzemeler (Virgülle Ayır)</label>
+                                <input type="text" asp-for="AnaMalzemeler" class="form-control bg-dark text-light border-warning" placeholder="Örn: Tavuk, Yulaf, Fıstık Ezmesi">
+                                <small class="text-secondary" style="font-size: 0.75rem;">Kullanıcı "Sevmediğim Besinler" kısmına bu kelimeleri yazdıysa tarif GİZLENECEK.</small>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Malzemeler</label>
-                            <textarea name="Malzemeler" class="form-control shadow-sm" rows="3"></textarea>
+                            <label class="form-label text-info fw-bold">Malzemeler</label>
+                            <textarea asp-for="Malzemeler" rows="3" class="form-control bg-dark text-light border-secondary shadow-sm" placeholder="Malzemeleri alt alta yazın..." required></textarea>
                         </div>
 
                         <div class="mb-5">
-                            <label class="form-label fw-bold text-secondary">Hazırlanış</label>
-                            <textarea name="Hazirlanis" class="form-control shadow-sm" rows="4"></textarea>
+                            <label class="form-label text-info fw-bold">Hazırlanış</label>
+                            <textarea asp-for="Hazirlanis" rows="5" class="form-control bg-dark text-light border-secondary shadow-sm" placeholder="Adım adım yapılışını anlatın..." required></textarea>
                         </div>
 
-                        <div class="d-grid gap-3">
-                            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">Kaydet</button>
-                            <a href="/Tarifler/Index" class="btn btn-outline-dark btn-lg fw-bold">Listeye Geri Dön</a>
-                        </div>
-
+                        <button type="submit" class="btn btn-info w-100 fw-bold text-dark py-3 fs-5 shadow-lg">TARİFİ KAYDET 🚀</button>
                     </form>
-
+                   
                 </div>
             </div>
         </div>

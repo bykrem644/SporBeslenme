@@ -1,0 +1,99 @@
+﻿@model SporBeslenmeWeb.Models.Tarifler
+
+@{
+    ViewData["Title"] = "Tarif Detayı";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-5 mb-5">
+    <div class="card bg-dark border-secondary shadow-lg">
+        <div class="card-header border-danger text-center py-4">
+            <h2 class="text-danger fw-bold mb-0">@Model.Ad</h2>
+            <span class="badge bg-danger mt-3 px-3 py-2">@Model.Kategori</span>
+        </div>
+        <div class="card-body p-5">
+
+            <div class="row mb-5 align-items-center bg-transparent border border-secondary rounded p-4">
+                <div class="col-md-6 d-flex flex-column gap-3">
+                    <h4 class="text-white fw-bold mb-2">Makro Besin Dağılımı</h4>
+                    <div class="badge bg-dark border border-info text-info fs-5 px-4 py-3 text-start shadow-sm">
+                        💧 Karbonhidrat: %@Model.KarbonhidratYuzdesi
+                    </div>
+                    <div class="badge bg-dark border border-success text-success fs-5 px-4 py-3 text-start shadow-sm">
+                        🥩 Protein: %@Model.ProteinYuzdesi
+                    </div>
+                    <div class="badge bg-dark border border-warning text-warning fs-5 px-4 py-3 text-start shadow-sm">
+                        🧈 Yağ: %@Model.YagYuzdesi
+                    </div>
+                </div>
+
+                <div class="col-md-6 d-flex justify-content-center">
+                    <div style="width: 250px; height: 250px; position: relative;">
+                        <canvas id="makroGrafigi"></canvas>
+                        <div class="position-absolute top-50 start-50 translate-middle text-center">
+                            <span class="text-muted fw-bold" style="font-size: 0.9rem;">TOPLAM</span><br />
+                            <span class="text-white fw-bold fs-4">%100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="text-white fw-bold mb-3">Malzemeler</h4>
+            <p class="text-muted fs-5 mb-5" style="line-height: 1.8;">@Model.Malzemeler</p>
+
+            <h4 class="text-white fw-bold mb-3">Hazırlanış</h4>
+            <p class="text-muted fs-5 mb-5" style="line-height: 1.8;">@Model.Hazirlanis</p>
+
+            <div class="text-center">
+                <a href="/Tarifler/Index" class="btn btn-outline-light btn-lg fw-bold px-5">Tariflere Geri Dön</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('makroGrafigi').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Karbonhidrat', 'Protein', 'Yağ'],
+                datasets: [{
+                    // Veritabanındaki verileri doğrudan buraya alıyoruz
+                    data: [@Model.KarbonhidratYuzdesi, @Model.ProteinYuzdesi, @Model.YagYuzdesi],
+                    backgroundColor: [
+                        '#0dcaf0', // Karbonhidrat (Mavi)
+                        '#198754', // Protein (Yeşil)
+                        '#ffc107'  // Yağ (Sarı)
+                    ],
+                    borderColor: '#1e2229', // Kartın arka plan rengiyle aynı yapıp kesik görünüm verdik
+                    borderWidth: 4,
+                    hoverOffset: 15 // Üzerine gelince parça dışarı fırlar
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%', // Grafiğin ortasındaki boşluğun büyüklüğü
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                },
+                plugins: {
+                    legend: {
+                        display: false // Renklerin anlamını solda rozet olarak yazdığımız için grafiğin üstündeki yazıları gizledik
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': %' + context.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

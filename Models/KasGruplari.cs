@@ -6,7 +6,7 @@ namespace SporBeslenmeWeb.Models
     {
         [Key]
         public int KasGrupID { get; set; }
-        public string Ad { get; set; }
-        public string Aciklama { get; set; }
+        public string Ad { get; set; }= string.Empty;
+        public string Aciklama { get; set; }= string.Empty;
     }
 }

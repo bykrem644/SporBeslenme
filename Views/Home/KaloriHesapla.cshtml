@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Kalori Hesaplayıcı";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="background: #1e2229; border: 1px solid #0dcaf0; box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);">
+                <div class="card-header border-info">
+                    <h4 class="text-info fw-bold text-center mb-0">Günlük Kalori ve Makro İhtiyacı</h4>
+                </div>
+                <div class="card-body text-light">
+
+                    <form asp-action="KaloriHesapla" method="post">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-info">Cinsiyet</label>
+                                <select name="cinsiyet" class="form-select bg-dark text-light border-secondary" required>
+                                    <option value="Erkek">Erkek</option>
+                                    <option value="Kadin">Kadın</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-info">Yaşınız</label>
+                                <input type="number" name="yas" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-info">Kilo (kg)</label>
+                                <input type="number" step="0.1" name="kilo" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-info">Boy (cm)</label>
+                                <input type="number" step="0.1" name="boy" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-info">Ana Hedefiniz</label>
+                                <select name="hedef" class="form-select bg-dark text-light border-secondary" required>
+                                    <option value="Koruma">Mevcut Kilomu Koru</option>
+                                    <option value="Zayiflama">Yağ Yakımı / Kilo Verme</option>
+                                    <option value="Hacim">Kas Kazanımı / Bulking</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label text-info">Haftalık Antrenman / Hareketlilik Seviyesi</label>
+                                <select name="aktivite" class="form-select bg-dark text-light border-secondary" required>
+                                    <option value="1200">Masa başı iş, hiç egzersiz yok</option>
+                                    <option value="1375">Hafif hareketli (Haftada 1-3 gün hafif yürüyüş/idman)</option>
+                                    <option value="1550">Orta seviye (Haftada 3-4 gün standart ağırlık veya kardiyo)</option>
+                                    <option value="1725" selected>Aktif Sporcu (Haftada 5-6 gün sert ağırlık idmanı veya futbol/basketbol)</option>
+                                    <option value="1900">Çok Yoğun (Haftada 6-7 gün çift idman, profesyonel atlet)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 fw-bold mt-3 text-dark">Makrolarımı Hesapla</button>
+                    </form>
+
+                    @if (ViewBag.Kalori != null)
+                    {
+                        <hr class="border-info mt-4">
+                        <div class="text-center mt-3">
+                            <h5 class="text-secondary">Hedef: <span class="text-light">@ViewBag.HedefStr</span></h5>
+                            <h3 class="text-light mt-3">Günlük Alman Gereken: <span class="text-info fw-bold">@ViewBag.Kalori kcal</span></h3>
+
+                            <div class="row mt-4">
+                                <div class="col-4">
+                                    <div class="p-3 bg-dark rounded border border-warning">
+                                        <h6 class="text-warning mb-1">Protein</h6>
+                                        <h4 class="text-light fw-bold mb-0">@ViewBag.Protein<span class="fs-6 text-secondary">g</span></h4>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-dark rounded border border-primary">
+                                        <h6 class="text-primary mb-1">Karb</h6>
+                                        <h4 class="text-light fw-bold mb-0">@ViewBag.Karb<span class="fs-6 text-secondary">g</span></h4>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-dark rounded border border-danger">
+                                        <h6 class="text-danger mb-1">Yağ</h6>
+                                        <h4 class="text-light fw-bold mb-0">@ViewBag.Yag<span class="fs-6 text-secondary">g</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (ViewBag.Gecmis != null)
+            {
+                var gecmisListesi = ViewBag.Gecmis as IEnumerable<SporBeslenmeWeb.Models.KaloriGecmisi>;
+                if (gecmisListesi != null && gecmisListesi.Any())
+                {
+                    <div class="card mt-4 shadow-lg" style="background: #1e2229; border: 1px solid #0dcaf0;">
+                        <div class="card-header border-info bg-dark">
+                            <h5 class="text-info fw-bold mb-0 text-center"><i class="bi bi-clock-history"></i> Kalori Hesaplama Geçmişin</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover mb-0 text-center align-middle" style="background: transparent;">
+                                    <thead>
+                                        <tr class="text-secondary small">
+                                            <th>Tarih</th>
+                                            <th>Seçilen Hedef</th>
+                                            <th>Günlük İhtiyaç</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in gecmisListesi)
+                                        {
+                                            <tr>
+                                                <td class="text-light small">@item.Tarih.ToString("dd MMM yyyy - HH:mm")</td>
+                                                <td class="text-secondary small">@item.Hedef</td>
+                                                <td class="text-warning fw-bold">@item.GunlukIhtiyac <small class="text-secondary fw-normal">kcal</small></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>

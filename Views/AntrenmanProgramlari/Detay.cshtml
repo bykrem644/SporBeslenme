@@ -1,0 +1,61 @@
+﻿@using SporBeslenmeWeb.Models
+@model AntrenmanProgrami
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="p-4 rounded" style="background: #1e2229; border: 1px solid #0dcaf0;">
+                <h3 class="text-info fw-bold">@Model.Baslik</h3>
+                <p class="text-secondary">@Model.Aciklama</p>
+                <hr class="border-secondary">
+                <h5 class="text-light">Egzersiz Listesi</h5>
+                <div class="list-group list-group-flush mt-3">
+                    @if (Model.Videolar != null && Model.Videolar.Any())
+                    {
+                        @foreach (var video in Model.Videolar)
+                        {
+                            <button class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3"
+                                    onclick="videoDegistir('@video.VideoYolu', '@video.VideoBaslik', '@video.Aciklama')">
+                                <span class="text-info fw-bold me-2">@video.Sira.</span> @video.VideoBaslik
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-secondary mt-2">Bu programa henüz video eklenmemiş.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="video-container p-3 rounded" style="background: #1e2229; border: 1px solid #0dcaf0;">
+                <h4 id="videoBaslik" class="text-info mb-3">Lütfen bir egzersiz seçin</h4>
+                <video id="anaVideo" controls class="w-100 rounded border border-secondary shadow">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Tarayıcınız video oynatmayı desteklemiyor.
+                </video>
+                <div class="mt-4 p-3 bg-dark rounded border border-secondary">
+                    <h6 class="text-info fw-bold">Hoca Notu:</h6>
+                    <p id="videoAciklama" class="text-secondary mb-0">Videonun altında egzersizin detayları burada görünecek.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function videoDegistir(yol, baslik, aciklama) {
+        const video = document.getElementById('anaVideo');
+        const source = document.getElementById('videoSource');
+        const baslikTag = document.getElementById('videoBaslik');
+        const aciklamaTag = document.getElementById('videoAciklama');
+
+        source.src = yol;
+        baslikTag.innerText = baslik;
+        aciklamaTag.innerText = aciklama;
+
+        video.load();
+        video.play();
+    }
+</script>

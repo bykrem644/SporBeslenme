@@ -1,0 +1,41 @@
+﻿@using SporBeslenmeWeb.Models
+@model AntrenmanProgrami
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="background: #1e2229; border: 1px solid #0dcaf0; box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);">
+                <div class="card-header border-info text-center py-3">
+                    <h4 class="text-info fw-bold mb-0">1. Adım: Yeni Program Oluştur</h4>
+                </div>
+                <div class="card-body text-light p-4">
+                    <form asp-action="Ekle" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">Program Başlığı</label>
+                            <input type="text" asp-for="Baslik" class="form-control bg-dark text-light border-secondary" placeholder="Örn: 3 Günlük Başlangıç" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-info fw-bold">Kısa Açıklama</label>
+                            <textarea asp-for="Aciklama" class="form-control bg-dark text-light border-secondary" rows="2" required></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Kaç Günlük?</label>
+                                <input type="number" asp-for="GunSayisi" class="form-control bg-dark text-light border-secondary" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-info fw-bold">Seviye</label>
+                                <select asp-for="Seviye" class="form-select bg-dark text-light border-secondary">
+                                    <option value="Başlangıç">Başlangıç</option>
+                                    <option value="Orta Seviye">Orta Seviye</option>
+                                    <option value="İleri Seviye">İleri Seviye</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 fw-bold text-dark mt-3">Programı Kaydet ve Video Eklemeye Geç</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
