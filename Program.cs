@@ -57,11 +57,23 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRateLimiter();
+
+// 1. Önce rotalar belirlenir
 app.UseRouting();
 
+// 2. Sonra siber güvenlik sýnýrlandýrmalarý devreye girer
+app.UseRateLimiter();
+
+// 3. ÝÞTE EKSÝK OLAN KRÝTÝK KOD! (Kimlik Doðrulama)
+// Bu kod mutlaka UseAuthorization'dan HEMEN ÖNCE olmalýdýr!
+app.UseAuthentication();
+
+// 4. Sonra yetki kontrolü yapýlýr
 app.UseAuthorization();
+
+// 5. En son Hub ve Controller haritalamalarý yapýlýr
 app.MapHub<SporBeslenmeWeb.Hubs.NotificationHub>("/notificationHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

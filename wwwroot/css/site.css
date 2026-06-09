@@ -242,3 +242,40 @@ body.light-mode {
         opacity: 0.8 !important;
         cursor: pointer;
     }
+/* Asistan Konteynerini Sabitleme ve Týklanabilir Yapma */
+.asistan-kontyner {
+    position: fixed; /* Ekraný kaydýrsan bile hep ayný yerde kalýr */
+    bottom: 30px; /* Alt kýsýmdan 30px boþluk */
+    right: 30px; /* En SAÐA alýr (Saðdan 30px boþluk) */
+    z-index: 9999 !important; /* TIKLANMAMA SORUNUNU ÇÖZER: Her þeyin en üstüne çýkar */
+}
+
+/* Asistan Butonu Tasarýmý */
+.asistan-btn {
+    background-color: #00d2ff;
+    color: #000;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+    .asistan-btn:hover {
+        transform: scale(1.05); /* Üzerine gelince hafif büyür */
+    }
+
+/* Chat Penceresinin Pozisyonu */
+.asistan-pencere {
+    position: absolute;
+    bottom: 60px; /* Pencere açýldýðýnda butonun hemen üstünde açýlýr */
+    right: 0;
+    width: 350px; /* Chat kutusunun geniþliði */
+    background: #1e2229;
+    border: 1px solid #00d2ff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10000;
+}

@@ -279,27 +279,26 @@
     <button onclick="SuSifirla()" class="btn btn-outline-danger btn-sm w-100 py-1">Sifirla</button>
 </div>
 
-<div class="asistan-konteyner">
+<div class="asistan-kontyner">
     <button id="asistanToggle" class="asistan-btn">
         🤖 Asistan
     </button>
 
     <div id="asistanPencere" class="asistan-pencere d-none">
         <div class="asistan-header">
-            <h6 class="mb-0 fw-bold text-light">🤖 Egzersiz Asistanı</h6>
+            <h6 class="mb-0 fw-bold text-info">🤖 AI Spor Koçu</h6>
             <button id="asistanKapat" class="btn-close btn-close-white" style="font-size: 0.8rem;"></button>
         </div>
 
-        <div class="asistan-body" id="asistanMesajlar">
-            <div class="mesaj asistan-mesaj">
-                Merhaba! Sana nasıl yardımcı olabilirim? Herhangi bir sakatlığın veya özel bir hedefin var mı?
+        <div class="asistan-body" id="asistanMesajlar" style="max-height: 300px; overflow-y: auto;">
+            <div class="mesaj asistan-mesaj text-light mb-3">
+                Merhaba! Ben senin yapay zeka destekli spor koçunum. Beslenme veya antrenmanla ilgili bana her şeyi sorabilirsin!
             </div>
         </div>
 
-        <div class="asistan-footer">
-            <button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="AsistanaSor('Menisküsüm var')">Menisküsüm var</button>
-            <button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="AsistanaSor('Bel fıtığım var')">Bel fıtığım var</button>
-            <button class="btn btn-sm btn-outline-info w-100" onclick="AsistanaSor('Sadece vücut ağırlığı')">Sadece vücut ağırlığı</button>
+        <div class="asistan-footer p-2 border-top border-secondary bg-dark d-flex">
+            <input type="text" id="asistanGirdi" class="form-control form-control-sm bg-dark text-light border-info me-2" placeholder="Sorunuzu yazın..." onkeypress="if(event.key === 'Enter') AsistanMesajGonder()">
+            <button onclick="AsistanMesajGonder()" class="btn btn-sm btn-info fw-bold">Gönder</button>
         </div>
     </div>
 </div>
@@ -372,52 +371,73 @@
             ArayuzuGuncelle();
         }
 
-        // Asistan Soru Sorma Sistemi
-        async function AsistanaSor(hedef) {
+               // --- YENİ GEMINI YAPAY ZEKA BAĞLANTISI ---
+          async function AsistanMesajGonder() {
+            const input = document.getElementById("asistanGirdi");
             const mesajlarDiv = document.getElementById("asistanMesajlar");
 
-            mesajlarDiv.innerHTML += "<div class='mesaj kullanici-mesaj'>" + hedef + "</div>";
+            if (!input || !mesajlarDiv) return;
+
+            const kullaniciMesaji = input.value.trim();
+            if (!kullaniciMesaji) return;
+
+            // SENİN MESAJIN (Gri arka plan, BEYAZ yazı - Kesin görünür)
+            mesajlarDiv.innerHTML += `
+                <div class="d-flex justify-content-end mb-3">
+                    <div class="p-2 rounded bg-secondary text-white shadow-sm" style="max-width: 85%;">
+                        <strong>Sen:</strong> ${kullaniciMesaji}
+                    </div>
+                </div>`;
+
+            input.value = "";
             mesajlarDiv.scrollTop = mesajlarDiv.scrollHeight;
 
-            const yaziyorDiv = document.createElement("div");
-            yaziyorDiv.className = "mesaj asistan-mesaj";
-            yaziyorDiv.innerHTML = "Asistan düşünüyor...";
-            yaziyorDiv.id = "yaziyorAnimasyonu";
-            mesajlarDiv.appendChild(yaziyorDiv);
+            // BEKLEME EFEKTİ
+            const loadingId = "loading-" + Date.now();
+            mesajlarDiv.innerHTML += `
+                <div id="${loadingId}" class="d-flex justify-content-start mb-3">
+                    <div class="p-2 rounded bg-dark text-muted border border-info" style="max-width: 85%;">
+                        🤖 Koç düşünüyor...
+                    </div>
+                </div>`;
             mesajlarDiv.scrollTop = mesajlarDiv.scrollHeight;
 
             try {
-                const response = await fetch("/Egzersizler/AsistanYanitla", {
+                const response = await fetch("/Home/AsistanaSor", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(hedef)
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(kullaniciMesaji)
                 });
 
                 const data = await response.json();
 
-                document.getElementById("yaziyorAnimasyonu").remove();
+                document.getElementById(loadingId).remove();
 
-                mesajlarDiv.innerHTML += "<div class='mesaj asistan-mesaj'>" + data.mesaj + "</div>";
+                // ASİSTANIN CEVABI (Siyah arka plan, MAVİ yazı)
+                mesajlarDiv.innerHTML += `
+                    <div class="d-flex justify-content-start mb-3">
+                        <div class="p-3 rounded bg-dark text-info border border-secondary shadow-sm" style="max-width: 90%;">
+                            <strong>🤖 AI Koç:</strong> <br> ${data.mesaj}
+                        </div>
+                    </div>`;
                 mesajlarDiv.scrollTop = mesajlarDiv.scrollHeight;
 
             } catch (error) {
-                const animasyon = document.getElementById("yaziyorAnimasyonu");
-                if(animasyon) animasyon.remove();
-                mesajlarDiv.innerHTML += "<div class='mesaj asistan-mesaj'>Bağlantı hatası oluştu, lütfen tekrar dene.</div>";
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                mesajlarDiv.innerHTML += `<div class="text-danger small text-center mb-3">Bağlantı koptu.</div>`;
             }
         }
-
-        // Sayfa Yüklendiğinde Eventleri Bağla
+         
+        // Asistan penceresini açıp kapama olayları
         document.addEventListener("DOMContentLoaded", function() {
-            ArayuzuGuncelle();
+
+            // Su arayüzünü güncelle (Varsa)
+            if(typeof ArayuzuGuncelle === "function") ArayuzuGuncelle();
 
             const asistanToggle = document.getElementById('asistanToggle');
             const asistanPencere = document.getElementById('asistanPencere');
             const asistanKapat = document.getElementById('asistanKapat');
 
-            // Eğer HTML elemanları sayfada varsa tıklama olaylarını ekle
             if(asistanToggle && asistanPencere) {
                 asistanToggle.addEventListener('click', () => {
                     asistanPencere.classList.toggle('d-none');

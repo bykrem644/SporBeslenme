@@ -26,7 +26,7 @@ namespace SporBeslenmeWeb.Controllers
             var egzersizler = _context.Egzersizler.ToList();
             return View(egzersizler);
         }
-       
+
         [Authorize(Roles = "Admin")]
         public IActionResult Ekle()
         {
@@ -128,30 +128,7 @@ namespace SporBeslenmeWeb.Controllers
             ViewBag.KasGruplari = new SelectList(_context.KasGruplari.ToList(), "KasGrupID", "Ad", egzersiz.KasGrupID);
             return View(egzersiz);
         }
-        [AllowAnonymous]
-        [HttpPost]
-        public IActionResult AsistanYanitla([FromBody] string durum)
-        {
-            string yanit = "";
-
-            if (durum == "Menisküsüm var")
-            {
-                yanit = "Menisküs için diz eklemine yük bindirmeyen hareketler önerilir. Yüzme, düz yolda yürüyüş ve düz bacak kaldırma egzersizlerini yapabilirsin. Squat ve Lunge gibi hareketlerden şimdilik kesinlikle uzak durmalısın.";
-            }
-            else if (durum == "Bel fıtığım var")
-            {
-                yanit = "Bel fıtığı için omurgaya binen dikey yükü azaltmalıyız. Deadlift veya Barbell Squat yerine; Plank ve esneme ağırlıklı hareketler senin için çok daha güvenli ve geliştiricidir.";
-            }
-            else if (durum == "Sadece vücut ağırlığı")
-            {
-                yanit = "Harika bir seçim. Ekipmana ihtiyacın yok. Şınav, barfiks ve mekik ile tüm vücudunu etkili bir şekilde çalıştırabilirsin. Kas haritasından ilgili bölgeleri seçerek hareketlerin videolarına bakabilirsin.";
-            }
-            else
-            {
-                yanit = "Sana özel bir program oluşturmam için soldaki kas haritasından çalışmak istediğin bölgeyi seçebilirsin.";
-            }
-
-            return Json(new { mesaj = yanit });
-        }
     }
 }
+    
+       

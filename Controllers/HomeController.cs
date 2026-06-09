@@ -7,6 +7,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 using SporBeslenmeWeb.Models;
+using System.Xml.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace SporBeslenmeWeb.Controllers
 {
@@ -14,16 +19,19 @@ namespace SporBeslenmeWeb.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager; // 1. BU SATIRI EKLE
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
 
         // CONSTRUCTOR (BAŞLANGIÇ) KISMINI ŞÖYLE GÜNCELLE:
         public HomeController(ILogger<HomeController> logger,
                               ApplicationDbContext context,
-                              UserManager<IdentityUser> userManager) // 2. BURAYA EKLE
+                              UserManager<IdentityUser> userManager,
+                              IConfiguration configuration)
         {
             _logger = logger;
             _context = context;
-            _userManager = userManager; // 3. BURAYA EKLE
+            _userManager = userManager;
+            _configuration = configuration;
         }
 
         [AllowAnonymous]
@@ -38,30 +46,36 @@ namespace SporBeslenmeWeb.Controllers
         {
             try
             {
-                using var client = new HttpClient();
-                client.DefaultRequestHeaders.Add("User-Agent", "SporBeslenmeWeb");
-
-                string newsApiKey = "86a6a491-9397-4b51-add8-e78613255e72";
-                string newsUrl = $"https://newsapi.org/v2/top-headlines?country=tr&category=sports&pageSize=8&apiKey={newsApiKey}"; // Hazır sayfa açmışken pageSize=8 yapıp 8 haber çekelim!
-
-                var newsResponse = await client.GetStringAsync(newsUrl);
-                var newsData = JsonNode.Parse(newsResponse);
                 var haberlerListesi = new List<SporHaberi>();
 
-                var articles = newsData?["articles"]?.AsArray();
-                if (articles != null)
+                // Şifre yok, limit yok! TRT Spor'un resmi canlı haber akışı
+                string rssUrl = "https://www.fotomac.com.tr/rss/anasayfa.xml";
+
+                using var client = new HttpClient();
+                // İnternet sitelerinin engellememesi için tarayıcı gibi davranıyoruz
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
+
+                // Veriyi çek
+                string xmlResponse = await client.GetStringAsync(rssUrl);
+
+                // Gelen metni XML olarak çözümle
+                XDocument xmlDoc = XDocument.Parse(xmlResponse);
+
+                // İçindeki <item> (haber) etiketlerinden ilk 8 tanesini al
+                var articles = xmlDoc.Descendants("item").Take(8);
+
+                foreach (var item in articles)
                 {
-                    foreach (var item in articles)
+                    haberlerListesi.Add(new SporHaberi
                     {
-                        haberlerListesi.Add(new SporHaberi
-                        {
-                            Baslik = item?["title"]?.ToString() ?? "Başlıksız Haber",
-                            Aciklama = item?["description"]?.ToString() ?? "Bu haberin detayını okumak için butona tıklayın.",
-                            Url = item?["url"]?.ToString() ?? "#",
-                            Kaynak = item?["source"]?["name"]?.ToString() ?? "Bilinmiyor"
-                        });
-                    }
+                        // XML etiketlerinin içindeki yazıları alıyoruz
+                        Baslik = item.Element("title")?.Value ?? "Başlıksız Haber",
+                        Aciklama = item.Element("description")?.Value ?? "Haberin detayını okumak için tıklayın.",
+                        Url = item.Element("link")?.Value ?? "#",
+                        Kaynak = "TRT Spor" // Kaynak zaten TRT
+                    });
                 }
+
                 ViewBag.Haberler = haberlerListesi;
             }
             catch (Exception ex)
@@ -371,5 +385,51 @@ public async Task<IActionResult> SanaOzel()
 
     return View(viewModel);
 }
+        [HttpPost]
+        public async Task<JsonResult> AsistanaSor([FromBody] string kullaniciMesaji)
+        {
+            if (string.IsNullOrWhiteSpace(kullaniciMesaji))
+                return Json(new { mesaj = "Lütfen bana bir soru sorun." });
+
+            try
+            {
+                string apiKey = _configuration["GeminiApiKey"];
+
+                // KONTROL 1: API Key gerçekten okunuyor mu?
+                if (string.IsNullOrEmpty(apiKey))
+                    return Json(new { mesaj = "SİSTEM HATASI: API Key bulunamadı! Lütfen appsettings.json dosyasını kontrol et." });
+
+                string apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={apiKey}";
+
+                // JSON serileştirme hatalarını sıfıra indiren manuel string formatı
+                string prompt = $"Sen SporBeslenme isimli uygulamanın spor koçusun. Soru: {kullaniciMesaji}. Kısa ve net cevap ver.";
+                string jsonBody = "{\"contents\":[{\"parts\":[{\"text\":\"" + prompt.Replace("\"", "\\\"").Replace("\n", " ") + "\"}]}]}";
+
+                // TRT'deki gibi SSL sertifika engelini aşan kod
+                var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true };
+                using var client = new HttpClient(handler);
+
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    using JsonDocument doc = JsonDocument.Parse(jsonResponse);
+                    string aiCevabi = doc.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
+                    return Json(new { mesaj = aiCevabi });
+                }
+                else
+                {
+                    // KONTROL 2: Google bizi reddederse GERÇEK SEBEBİ ekrana yazdıralım
+                    string hataDetayi = await response.Content.ReadAsStringAsync();
+                    return Json(new { mesaj = $"API Hatası ({response.StatusCode}): {hataDetayi}" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { mesaj = "Sistem Çöktü: " + ex.Message });
+            }
+        }
     }
 }
